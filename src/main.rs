@@ -35,7 +35,8 @@ impl Dgraph {
     // then "http://" will be used.
     // url must not end with `/graphql`, if it is - it will be trimmed off.
     fn new(url: String, auth_header: Option<String>) -> Result<Self> {
-        // but if if scheme is not provided - host pay be parsed as scheme
+        // if scheme is not provided (example: localhost:8080)
+        // then host may be parsed as scheme,
         // see: https://github.com/servo/rust-url/issues/613
         let mut parsed_url = Url::parse(&url)?;
         // add scheme, if missing
@@ -83,7 +84,7 @@ impl Dgraph {
             .send_json(json!(GqlRequest { query, variables }))?
             .into_json()?;
         if let Some(errors) = resp.errors {
-            // gql errors can be prettier, but do we expect to see them often
+            // gql errors can be prettier, but do i expect to see them often
             // to care enough? no.
             Err(anyhow!("{:#?}", &errors))
         } else {
@@ -140,7 +141,6 @@ impl UpdateSchema {
 struct GetSchema {}
 impl GetSchema {
     fn exec(self, dgraph: &Dgraph) -> Result<()> {
-        // TODO: response struct
         let resp = dgraph.query::<(), JsonValue>(
             "admin",
             r#"query getGQLSchema {
@@ -149,8 +149,8 @@ impl GetSchema {
             (),
         )?;
         if let Some(data) = resp {
-            // NOTE: schema is null on a new database, or if drop-all
-            // was called - schema is "" (empty string).
+            // NOTE: schema is null on a new database, but if drop-all
+            // was called - schema is ""(empty string).
             let schema = data["getGQLSchema"]["schema"]
                 .as_str()
                 .unwrap_or_default()
