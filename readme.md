@@ -51,7 +51,7 @@ you will need [rust and cargo](https://doc.rust-lang.org/cargo/getting-started/i
 ```
 $ git clone https://github.com/blukai/dgraph-admin.git
 $ cd dgraph-admin
-$ cargo build --path .
+$ cargo install --path .
 ```
 
 ## a piece of motivation
